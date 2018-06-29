@@ -18,34 +18,36 @@ var outputName = process.argv[4];
  * 
  ********************************************************************/
 const checkUserVariables = function () {
+    //DECLARE LOCAL VARIABLES
     let err;
     let doNotContinue = false;
-    // console.log(fs.accessSync(dsv_location));
+
     // CHECK ARGUEMENT 1
-    if (!fs.existsSync(dsv_location)) {
+    if (!dsv_location) {
+        err = 'Enter the full path to the initial .csv file.';
+        doNotContinue = true;
+    } else if (!fs.existsSync(dsv_location)) {
         err = 'That File Might Not Exist!';
-        doNotContinue = true
+        doNotContinue = true;
     } 
     else if (dsv_location.slice(-4) !== '.csv') {
         err = 'This Program Requires a .csv File-Type!';
-        doNotContinue = true
+        doNotContinue = true;
     } 
-    if(doNotContinue){process.exit(console.log(err));}
+    if (doNotContinue){process.exit(console.log(err));}
 
     // CHECK ARGUEMENT 2
-    if(!process.argv[3]) {outputLocation = './'}
-    // console.log(outputLocation.slice(-1));
-    // if(outputLocation.slice(-1) !== '/' || outputLocation.slice(-1) !== '\\'){
-    //     err = 'It looks like your output location is not a directory. Try Again.';
-    //     doNotContinue = true;
-    // }
+    if (!outputLocation) {outputLocation = './'}
+    if (!fs.existsSync(outputLocation)) {
+        err = 'It looks like your output location is not an existing directory. Try Again.';
+        doNotContinue = true;
+    }
     if(doNotContinue){process.exit(console.log(err));}
+
     // CHECK ARGUEMENT 3
     if(!process.argv[4]) {outputName = 'new.csv'}
     if(outputName.slice(-4) !== '.csv'){outputName += '.csv';}
     
-    // console.log(dsv_location.slice(-4));
-    // console.log(dsv_location + '\n' + outputLocation + '\n' + outputName + '\n');
 }
 
 /********************************************************************
@@ -88,7 +90,6 @@ const createCSV = function (dummyData) {
     dummyData.columns.forEach( (column) => {
         output += (column + ',');
     });
-    // output += '\n';
     dummyData.forEach( (row) => {
         output += '\n';
             dummyData.columns.forEach( (column) => {
@@ -104,19 +105,16 @@ const createCSV = function (dummyData) {
  * 
  ********************************************************************/
 const exportCSV = function (exportData) {
-    fileOpenError = { 
-        errno: -4082,
-        code: 'EBUSY',
-        syscall: 'open'
-    }
     fs.writeFile(outputLocation + outputName, exportData, function(err){
         if (err) {
             if (err.errno === -4082 || err.code === 'EBUSY') {
-                console.error('You need to close this file before you can overwrite its contents.')
-            } else{
+                console.error('Close the existing file before you can overwriting its contents.');
+            } else if (err.errno === -4058 || err.code === 'ENOENT') {
+                console.error('It looks like your target directory doesn\'t exist.')
+            }else{
                 console.error('Something Definitely Went Wrong: ');
-                console.error(err);
             }
+            console.error(err);
         } else {
             console.log('Successfully Output new file: ' + outputName);
         }
