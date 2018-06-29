@@ -29,7 +29,7 @@ const checkUserVariables = function () {
     else if (dsv_location.slice(-4) !== '.csv') {
         err = 'This Program Requires a .csv File-Type!';
         doNotContinue = true
-    }
+    } 
     if(doNotContinue){process.exit(console.log(err));}
 
     // CHECK ARGUEMENT 2
