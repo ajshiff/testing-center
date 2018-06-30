@@ -1,9 +1,12 @@
 /********************************************************************
+ * dummyData_fromCSV.js
+ * Creates a .csv file based on an existing .csv file, but replaces all
+ * initial values with dummy-placeholder information. The column values
+ * and number of rows is maintained during conversion.
+ * The End result is a new .csv file populated with dummy-data.
  * 
- * 
- * 
- * 
- * 
+ * USAGE: 
+ * > node ./dummyData_fromCSV.js <dsv_location> [new_dsv_location] [new_dsv_name]
  ********************************************************************/
 
 // DECLARE DEPENDENCIES AND CONSTANTS
@@ -69,16 +72,13 @@ const conversionSeries = function (data) {
     var newData;
     data.columns.forEach(column => {
         let rowCounter = 0;
-        newData = data.map(value => {
-            let returnValue = '';
-            if (value[column].toLowerCase() !== 'no data'){
-                returnValue = column + '_name_' + rowCounter;
-            } else {
-                returnValue = value[column]+ '_' + column + '_' + rowCounter;
-            }
+        // Collect dummy data one column at a time
+        newData = data.map(() => {
+            let returnValue = column + '_name_' + rowCounter;
             rowCounter += 1;
             return returnValue;
         });
+        // Overwrite the existing data input with dummy data from newData variable.
         data.forEach((row, index) => {
             row[column] = newData[index];
         });
@@ -87,7 +87,9 @@ const conversionSeries = function (data) {
 }
 
 /********************************************************************
- * 
+ * createCSV takes a piece of data with the same structure as 
+ * d3.csv() would return, then reformats it back into a .csv format.
+ * It returns the .csv formatted string.
  ********************************************************************/
 const createCSV = function (dummyData) {
     var output = '';
@@ -105,7 +107,8 @@ const createCSV = function (dummyData) {
 }
 
 /********************************************************************
- * 
+ * exportCSV() takes a string in writes that string to a .csv document 
+ * at target location (determined by command-line input). 
  ********************************************************************/
 const exportCSV = function (exportData) {
     fs.writeFile(outputLocation + outputName, exportData, function(err){
@@ -125,7 +128,8 @@ const exportCSV = function (exportData) {
 }
 
 /********************************************************************
- * 
+ * The core of the program. Runs everything in order, ultimately producing
+ * a .csv populated with dummy-data based on the original .csv.
  ********************************************************************/
 function main () {
     checkUserVariables();
