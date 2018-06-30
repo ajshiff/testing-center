@@ -46,7 +46,7 @@ const checkUserVariables = function () {
     if (!outputLocation) {
         outputLocation = './';
     } else if (!fs.existsSync(outputLocation)) {
-        err = 'It looks like your output location is not an existing directory. Try Again.';
+        err = 'It looks like your output location is not in an existing directory. Try Again.';
         doNotContinue = true;
     } else if (outputLocation.slice(-4) === '.csv') {
         err = 'Make the name of the new file the 3rd arguement.';
