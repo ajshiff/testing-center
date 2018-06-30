@@ -14,7 +14,11 @@ var outputLocation = process.argv[3];
 var outputName = process.argv[4];
 
 /********************************************************************
- * 
+ * checkUserVariables() checks the command-line user input to determine
+ * whether the program can complete the task with the information given
+ * by the user and terminates with an error if it can't. It also sets
+ * default values for the outputLocation and outputName if either
+ * isn't specified.
  ********************************************************************/
 const checkUserVariables = function () {
     //DECLARE LOCAL VARIABLES
@@ -36,16 +40,22 @@ const checkUserVariables = function () {
     if (doNotContinue){process.exit(console.log(err));}
 
     // CHECK ARGUEMENT 2
-    if (!outputLocation) {outputLocation = './'}
-    if (!fs.existsSync(outputLocation)) {
+    if (!outputLocation) {
+        outputLocation = './';
+    } else if (!fs.existsSync(outputLocation)) {
         err = 'It looks like your output location is not an existing directory. Try Again.';
         doNotContinue = true;
+    } else if (outputLocation.slice(-4) === '.csv') {
+        err = 'Make the name of the new file the 3rd arguement.';
+        doNotContinue = true;
+    } else if (!outputLocation.endsWith('/') || !outputLocation.endsWith('\\')) {
+        outputLocation += '/';
     }
-    if(doNotContinue){process.exit(console.log(err));}
-
+    if (doNotContinue) {process.exit(console.log(err));}
+    
     // CHECK ARGUEMENT 3
-    if(!outputName) {outputName = 'new.csv'}
-    if(outputName.slice(-4) !== '.csv'){outputName += '.csv';}
+    if (!outputName) {outputName = 'new.csv'}
+    else if (outputName.slice(-4) !== '.csv') {outputName += '.csv';}
     
 }
 
